@@ -1,7 +1,12 @@
 ;; custom
 (defvar spray-wpm 400 "words/min")
 (defvar spray-text-scale 5)
-(defvar spray-orp-face 'error)
+
+(make-face 'spray-orp-face)
+(set-face-attribute 'spray-orp-face nil
+                    :foreground "red"
+                    :underline (face-foreground 'default)
+                    :overline (face-foreground 'default))
 
 ;; internal variables for spraying
 (defvar spray--padding-overlay nil)
@@ -26,7 +31,7 @@
                spray--saved-cursor-type cursor-type)
          (setq cursor-type nil)
          (text-scale-set spray-text-scale)
-         (overlay-put spray--orp-overlay 'face spray-orp-face)
+         (overlay-put spray--orp-overlay 'face 'spray-orp-face)
          (add-hook 'pre-command-hook 'turn-off-spray-mode)
          ;; disable incompatible minor-modes
          (when (boundp 'global-hl-line-mode)
