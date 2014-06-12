@@ -3,6 +3,10 @@
 A speed reading mode for Emacs (an elisp implementation of
 [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]]).
 
+** Screencast
+
+[[screencast.gif]]
+
 ** Installation
 
 Put this script into a "load-path"ed directory, and load it in your
