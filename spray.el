@@ -1,5 +1,5 @@
 ;; custom
-(defvar spray-freq (/ 60.0 400) "60.0 / WPM")
+(defvar spray-wpm 400 "words/min")
 (defvar spray-text-scale 5)
 (defvar spray-orp-face 'error)
 
@@ -22,7 +22,7 @@
   (cond (spray-mode
          (setq spray--orp-overlay (make-overlay 0 0)
                spray--padding-overlay (make-overlay 0 0)
-               spray--timer (run-with-timer 0 spray-freq 'spray-next)
+               spray--timer (run-with-timer 0 (/ 60.0 spray-wpm) 'spray-next)
                spray--saved-cursor-type cursor-type)
          (setq cursor-type nil)
          (text-scale-set spray-text-scale)
