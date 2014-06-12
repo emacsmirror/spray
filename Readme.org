@@ -1,7 +1,8 @@
 * spray.el
 
-A speed reading mode for Emacs (an elisp implementation of
-[[https://github.com/Miserlou/OpenSpritz][OpenSpritz]]).
+A speed reading mode for Emacs.
+
+The algorithm is taken from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]] (with a few modifications).
 
 ** Screencast
 
