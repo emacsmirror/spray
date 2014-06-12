@@ -1,0 +1,16 @@
+* spray.el
+
+A speed reading mode for Emacs (an elisp implementation of
+[[https://github.com/Miserlou/OpenSpritz][OpenSpritz]]).
+
+** Installation
+
+Put this script into a "load-path"ed directory, and load it in your
+init file.
+
+: (require 'spray)
+
+Then you may run spray with "M-x spray-mode". Binding some keys may
+also be useful.
+
+: (global-set-key (kbd "<f6>") 'spray-mode)
