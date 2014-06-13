@@ -1,6 +1,6 @@
 ;; custom
-(defvar spray-wpm 350 "words/min")
-(defvar spray-height 500 "height of characters")
+(defvar spray-wpm 400 "words/min")
+(defvar spray-height 400 "height of characters")
 
 (make-face 'spray-base-face)
 (set-face-attribute 'spray-base-face nil
@@ -52,8 +52,7 @@
 (defun spray-next ()
   (cond ((not (zerop spray--delay))
          (setq spray--delay (1- spray--delay))
-         (when (and (<= spray--delay 2)
-                    (= (char-before) ?.))
+         (when (= spray--delay 2)
            (narrow-to-region (point) (point))))
         (t
          (widen)
@@ -69,10 +68,12 @@
                                 ((6 7 8 9) 3)
                                 ((10 11 12 13) 4)
                                 (t 5)))))
-             (setq spray--delay (+ (if (> len 8) 1 0) (cl-case (char-before)
-                                                        ((?. ?! ?\? ?\;) 3)
-                                                        ((?, ?:) 1)
-                                                        (t 0))))
+             (setq spray--delay (+ (if (> len 9) 1 0)
+                                   (if (eql (char-after) ?\n) 3 0)
+                                   (cl-case (char-before)
+                                     ((?. ?! ?\? ?\;) 3)
+                                     ((?, ?:) 1)
+                                     (t 0))))
              (move-overlay spray--orp-overlay (1- orp) orp)
              (move-overlay spray--base-overlay beg end)
              (overlay-put spray--base-overlay
