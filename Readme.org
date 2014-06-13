@@ -4,18 +4,45 @@ A speed reading mode for Emacs.
 
 The algorithm is taken from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]] (with a few modifications).
 
+NOTE: This is a WIP project and thus APIs may change.
+
 ** Screencast
 
 [[screencast.gif]]
 
 ** Installation
 
-Put this script into a "load-path"ed directory, and load it in your
-init file.
+Put cedit.el into a "load-path"ed directory, and load it in your init
+file.
 
 : (require 'spray)
 
-Then you may run spray with "M-x spray-mode". Binding some keys may
-also be useful.
+Then you can start spraying from the cursor position with =M-x
+spray-mode=. Binding some keys may also be useful.
 
 : (global-set-key (kbd "<f6>") 'spray-mode)
+
+** Commands
+
+In spray-mode buffers, following commands are available.
+
+- =spray-start/stop= (SPC) ::
+     pause or resume spraying
+
+- =spray-backward-word= (h, <left>) ::
+     pause and back to the last word
+
+- =spray-forward-word= (l, <right>) ::
+     inverse of =spray-backward-word=
+
+Press any key else to quit =spray-mode=.
+
+** Customization
+
+You may customize spray by modifying following items:
+
+- [Variable] spray-wpm
+- [Variable] spray-height
+- [Keymap] spray-mode-map
+- [Face] spray-base-face
+- [Face] spray-orp-face
