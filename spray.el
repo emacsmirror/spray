@@ -1,3 +1,5 @@
+(require 'face-remap)
+
 ;; custom
 (defvar spray-wpm 400 "words/min")
 (defvar spray-height 400 "height of characters")
