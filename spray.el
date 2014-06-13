@@ -1,16 +1,62 @@
+;;; cedit.el --- a speed reading mode
+
+;; Copyright (C) 2014 zk_phi
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, write to the Free Software
+;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+
+;; Author: zk_phi
+;; URL: http://hins11.yu-yake.com/
+;; Version: 0.0.0
+
+;;; Commentary:
+
+;; Put this script into a "load-path"ed directory, and load it in your
+;; init file.
+;;
+;;   (require 'spray)
+;;
+;; Then you may run spray with "M-x spray-mode". Binding some keys may
+;; also be useful.
+;;
+;;   (global-set-key (kbd "<f6>") 'spray-mode)
+;;
+;; For more informations, see Readme.org.
+
+;;; Change Log:
+;; 0.0.0 test release
+
+;;; Code:
+
 (require 'face-remap)
 
-;; custom
+;; * customizable vars
+
 (defvar spray-wpm 400 "words/min")
 (defvar spray-height 400 "height of characters")
+
 (defvar spray-mode-map
   (let ((km (make-sparse-keymap)))
     (define-key km (kbd "SPC") 'spray-start/stop)
     (define-key km (kbd "h") 'spray-backward-word)
-    (define-key km (kbd "<left>") 'spray-backward-word)
     (define-key km (kbd "l") 'spray-forward-word)
+    (define-key km (kbd "<left>") 'spray-backward-word)
     (define-key km (kbd "<right>") 'spray-forward-word)
-    km))
+    km)
+  "keymap for spray-mode buffers")
+
+;; * faces
 
 (make-face 'spray-base-face)
 (set-face-attribute 'spray-base-face nil
@@ -23,7 +69,8 @@
                     :overline (face-foreground 'default)
                     :underline (face-foreground 'default))
 
-;; internal variables
+;; * internal vars
+
 (defvar spray--base-overlay nil)
 (defvar spray--orp-overlay nil)
 (defvar spray--running nil)
@@ -32,6 +79,9 @@
 (defvar spray--saved-buffer-face nil)
 (defvar spray--saved-restriction nil)
 
+;; * the mode
+
+;;;###autoload
 (define-minor-mode spray-mode
   "spray mode"
   :init nil
@@ -70,8 +120,8 @@
          (spray-start/stop -1))))
 
 (defun spray--pre-command-handler ()
-  (unless (memq this-command '(spray-forward-word
-                               spray-backward-word spray-start/stop))
+  (unless (memq this-command
+                '(spray-forward-word spray-backward-word spray-start/stop))
     (spray-mode -1)))
 
 (defun spray--word-at-point ()
@@ -109,7 +159,7 @@
            (skip-chars-forward "\s\t\n")
            (spray--word-at-point)))))
 
-;; commands
+;; * interactive commands
 
 (defun spray-start/stop (&optional switch)
   (interactive)
@@ -138,4 +188,8 @@
   (skip-chars-backward "\s\t\n")
   (spray--word-at-point))
 
+;; * provide
+
 (provide 'spray)
+
+;;; spray.el ends here
