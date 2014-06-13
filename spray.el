@@ -1,23 +1,23 @@
 ;; custom
-(defvar spray-wpm 400 "words/min")
-(defvar spray-text-scale 5)
+(defvar spray-wpm 350 "words/min")
+(defvar spray-height 500 "height of characters")
+
+(make-face 'spray-base-face)
+(set-face-attribute 'spray-base-face nil
+                    :background (face-background 'default)
+                    :foreground (face-foreground 'default))
 
 (make-face 'spray-orp-face)
 (set-face-attribute 'spray-orp-face nil
                     :foreground "red"
-                    :underline (face-foreground 'default)
-                    :overline (face-foreground 'default))
+                    :overline (face-foreground 'default)
+                    :underline (face-foreground 'default))
 
-;; internal variables for spraying
-(defvar spray--padding-overlay nil)
+;; internal variables
+(defvar spray--base-overlay nil)
 (defvar spray--orp-overlay nil)
 (defvar spray--timer nil)
 (defvar spray--delay 0)
-
-;; incompatible minor-modes
-(defvar spray--saved-global-hl-line-mode nil)
-(defvar spray--saved-font-lock-mode nil)
-(defvar spray--saved-hl-line-mode nil)
 (defvar spray--saved-cursor-type nil)
 
 (define-minor-mode spray-mode
@@ -25,39 +25,26 @@
   :init nil
   :global nil
   (cond (spray-mode
-         (setq spray--orp-overlay (make-overlay 0 0)
-               spray--padding-overlay (make-overlay 0 0)
+         (let ((buffer-face-mode-face `(:height ,spray-height)))
+           (buffer-face-mode 1))
+         (setq spray--base-overlay (make-overlay (point-min) (point-max))
+               spray--orp-overlay (make-overlay 0 0)
                spray--timer (run-with-timer 0 (/ 60.0 spray-wpm) 'spray-next)
                spray--saved-cursor-type cursor-type)
          (setq cursor-type nil)
-         (text-scale-set spray-text-scale)
+         (overlay-put spray--base-overlay 'priority 100)
+         (overlay-put spray--base-overlay 'face 'spray-base-face)
+         (overlay-put spray--orp-overlay 'priority 101)
          (overlay-put spray--orp-overlay 'face 'spray-orp-face)
-         (add-hook 'pre-command-hook 'turn-off-spray-mode)
-         ;; disable incompatible minor-modes
-         (when (boundp 'global-hl-line-mode)
-           (setq spray--saved-global-hl-line-mode global-hl-line-mode)
-           (set (make-local-variable 'global-hl-line-mode) nil))
-         (when (boundp 'font-lock-mode)
-           (setq spray--saved-font-lock-mode font-lock-mode)
-           (font-lock-mode -1))
-         (when (boundp 'hl-line-mode)
-           (setq spray--saved-hl-line-mode hl-line-mode)
-           (hl-line-mode -1)))
+         (add-hook 'pre-command-hook 'turn-off-spray-mode))
         (t
+         (buffer-face-mode -1)
          (widen)
          (setq cursor-type spray--saved-cursor-type)
-         (text-scale-set 0)
+         (delete-overlay spray--base-overlay)
          (delete-overlay spray--orp-overlay)
-         (delete-overlay spray--padding-overlay)
          (cancel-timer spray--timer)
-         (remove-hook 'pre-command-hook 'turn-off-spray-mode)
-         ;; restore incompatible minor-modes
-         (when spray--saved-global-hl-line-mode
-           (setq global-hl-line-mode spray--saved-global-hl-line-mode))
-         (when spray--saved-font-lock-mode
-           (font-lock-mode 1))
-         (when spray--saved-hl-line-mode
-           (hl-line-mode 1)))))
+         (remove-hook 'pre-command-hook 'turn-off-spray-mode))))
 
 (defun turn-on-spray-mode () (interactive) (spray-mode 1))
 (defun turn-off-spray-mode () (interactive) (spray-mode -1))
@@ -86,10 +73,10 @@
                                                         ((?. ?! ?\? ?\;) 3)
                                                         ((?, ?:) 1)
                                                         (t 0))))
-             (overlay-put spray--padding-overlay
-                          'before-string (make-string (- 5 (- orp beg)) ?\s))
-             (move-overlay spray--padding-overlay beg (1+ beg))
              (move-overlay spray--orp-overlay (1- orp) orp)
+             (move-overlay spray--base-overlay beg end)
+             (overlay-put spray--base-overlay
+                          'before-string (make-string (- 5 (- orp beg)) ?\s))
              (narrow-to-region beg end))))))
 
 (provide 'spray)
