@@ -130,8 +130,7 @@ an integer or a float value."
          (spray-start/stop -1))))
 
 (defun spray--pre-command-handler ()
-  (unless (memq this-command
-                '(spray-forward-word spray-backward-word spray-start/stop))
+  (unless (string-match "^spray-" (symbol-name this-command))
     (spray-mode -1)))
 
 (defun spray--word-at-point ()
