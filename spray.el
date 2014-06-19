@@ -18,7 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 0.0.0
+;; Version: 0.0.1
 
 ;;; Commentary:
 
@@ -36,6 +36,7 @@
 
 ;;; Change Log:
 ;; 0.0.0 test release
+;; 0.0.1 add spray-set-margins
 
 ;;; Code:
 
@@ -71,6 +72,7 @@
 
 ;; * internal vars
 
+(defvar spray--margin-string "")
 (defvar spray--base-overlay nil)
 (defvar spray--orp-overlay nil)
 (defvar spray--running nil)
@@ -78,6 +80,14 @@
 (defvar spray--saved-cursor-type nil)
 (defvar spray--saved-buffer-face nil)
 (defvar spray--saved-restriction nil)
+
+;; * utility functions
+
+(defun spray-set-margins (left above)
+  "add margins before/above the spray text. each arguments can be
+an integer or a float value."
+  (setq spray--margin-string
+        (propertize " " 'display `((space-width ,left) (height ,(1+ above))))))
 
 ;; * the mode
 
@@ -143,8 +153,9 @@
                             (t 0))))
     (move-overlay spray--orp-overlay (1- orp) orp)
     (move-overlay spray--base-overlay beg end)
-    (overlay-put spray--base-overlay
-                 'before-string (make-string (- 5 (- orp beg)) ?\s))
+    (overlay-put spray--base-overlay 'before-string
+                 (concat spray--margin-string
+                         (make-string (- 5 (- orp beg)) ?\s)))
     (narrow-to-region beg end)))
 
 (defun spray--update ()
