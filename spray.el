@@ -54,6 +54,8 @@
     (define-key km (kbd "l") 'spray-forward-word)
     (define-key km (kbd "<left>") 'spray-backward-word)
     (define-key km (kbd "<right>") 'spray-forward-word)
+    (define-key km (kbd "f") 'spray-faster)
+    (define-key km (kbd "s") 'spray-slower)
     km)
   "keymap for spray-mode buffers")
 
@@ -197,6 +199,32 @@ an integer or a float value."
   (skip-chars-backward "^\s\t\n")
   (skip-chars-backward "\s\t\n")
   (spray--word-at-point))
+
+(defun spray-faster ()
+  "Increases speed.
+
+Increases the wpm (words per minute) parameter. See the variable
+`spray-wmp'."
+  (interactive)
+  (spray-inc-wpm 20))
+
+(defun spray-slower ()
+  "Decreases speed.
+
+Decreases the wpm (words per minute) parameter. See the variable
+`spray-wmp'."
+  (interactive)
+  (spray-inc-wpm -20))
+
+(defun spray-inc-wpm (delta)
+  (let ((was-running spray--running))
+    (spray-start/stop -1)
+    (when (< 10 (+ spray-wpm delta))
+      (setq spray-wpm (+ spray-wpm delta)))
+    (spray-backward-word)
+    (message "spray wpm: %d" spray-wpm)
+    (when was-running
+      (spray-start/stop 1))))
 
 ;; * provide
 

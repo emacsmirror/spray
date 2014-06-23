@@ -35,6 +35,12 @@ In spray-mode buffers, following commands are available.
 - =spray-forward-word= (l, <right>) ::
      inverse of =spray-backward-word=
 
+- =spray-faster= (f) ::
+     increases speed
+
+- =spray-slower= (s) ::
+     decreases speed
+
 Press any key else to quit =spray-mode=.
 
 ** Customization
