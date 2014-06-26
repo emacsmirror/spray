@@ -62,13 +62,15 @@
 (make-face 'spray-base-face)
 (set-face-attribute 'spray-base-face nil
                     :background (face-background 'default)
-                    :foreground (face-foreground 'default))
+                    :foreground (face-foreground 'default)
+                    :slant 'normal)
 
 (make-face 'spray-orp-face)
 (set-face-attribute 'spray-orp-face nil
                     :foreground "red"
                     :overline (face-foreground 'default)
-                    :underline (face-foreground 'default))
+                    :underline (face-foreground 'default)
+                    :slant 'normal)
 
 ;; * internal vars
 
