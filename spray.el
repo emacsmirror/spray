@@ -18,6 +18,7 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
+;; Author: Ian Kelling <ian@iankelling.org>
 ;; Version: 0.0.1
 
 ;;; Commentary:
@@ -117,7 +118,7 @@ an integer or a float value."
          (overlay-put spray--orp-overlay 'priority 101)
          (overlay-put spray--orp-overlay 'face 'spray-orp-face)
          (add-hook 'pre-command-hook 'spray--pre-command-handler)
-         (spray-start/stop 1))
+         (spray-start))
         (t
          (setq cursor-type spray--saved-cursor-type)
          (if spray--saved-restriction
@@ -131,7 +132,7 @@ an integer or a float value."
          (delete-overlay spray--base-overlay)
          (delete-overlay spray--orp-overlay)
          (remove-hook 'pre-command-hook 'spray--pre-command-handler)
-         (spray-start/stop -1))))
+         (spray-stop))))
 
 (defun spray--pre-command-handler ()
   (unless (string-match "^spray-" (symbol-name this-command))
@@ -175,28 +176,37 @@ an integer or a float value."
 
 ;; * interactive commands
 
-(defun spray-start/stop (&optional switch)
+(defun spray-start/stop ()
+  "Toggle pause/unpause spray."
   (interactive)
-  (cond ((and (memql switch '(nil 1))
-              (not spray--running))
-         (setq spray--running
-               (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
-        ((memql switch '(nil -1))
-         (cancel-timer spray--running)
-         (setq spray--running nil))
-        (t
-         nil)))
+  (or (spray-stop) (spray-start)))
+
+(defun spray-stop ()
+  "Pause spray.
+Returns t if spray was unpaused."
+  (interactive)
+  (prog1 spray--running
+    (when spray--running
+      (cancel-timer spray--running)
+      (setq spray--running nil))))
+
+(defun spray-start ()
+  "Start / resume spray."
+  (interactive)
+  (setq spray--running
+        (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
+
 
 (defun spray-forward-word ()
   (interactive)
-  (when spray--running (spray-start/stop -1))
+  (spray-stop)
   (widen)
   (skip-chars-forward "\s\t\n")
   (spray--word-at-point))
 
 (defun spray-backward-word ()
   (interactive)
-  (when spray--running (spray-start/stop -1))
+  (spray-stop)
   (widen)
   (skip-chars-backward "^\s\t\n")
   (skip-chars-backward "\s\t\n")
@@ -220,13 +230,13 @@ Decreases the wpm (words per minute) parameter. See the variable
 
 (defun spray-inc-wpm (delta)
   (let ((was-running spray--running))
-    (spray-start/stop -1)
+    (spray-stop)
     (when (< 10 (+ spray-wpm delta))
       (setq spray-wpm (+ spray-wpm delta)))
-    (spray-backward-word)
+    (and was-running (spray-backward-word))
     (message "spray wpm: %d" spray-wpm)
     (when was-running
-      (spray-start/stop 1))))
+      (spray-start))))
 
 ;; * provide
 
