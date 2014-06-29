@@ -56,7 +56,8 @@
     (define-key km (kbd "<left>") 'spray-backward-word)
     (define-key km (kbd "<right>") 'spray-forward-word)
     (define-key km (kbd "f") 'spray-faster)
-    (define-key km (kbd "s") 'spray-slower)
+    (define-key km (kbd "q") 'spray-quit)
+    (define-key km (kbd "<return>") 'spray-quit)
     km)
   "keymap for spray-mode buffers")
 
@@ -77,7 +78,8 @@
 
 ;; * internal vars
 
-(defvar spray--margin-string "")
+(defvar spray--margin-string ""
+  "Currently not used.")
 (defvar spray--base-overlay nil)
 (defvar spray--orp-overlay nil)
 (defvar spray--running nil)
@@ -89,10 +91,11 @@
 ;; * utility functions
 
 (defun spray-set-margins (left above)
-  "add margins before/above the spray text. each arguments can be
+  "Currently broken & not used:
+add margins before/above the spray text. each arguments can be
 an integer or a float value."
   (setq spray--margin-string
-        (propertize " " 'display `((space-width ,left) (height ,(1+ above))))))
+        (propertize " " 'display `((space-width ,left) (height ,(+ 1 above))))))
 
 ;; * the mode
 
@@ -133,6 +136,11 @@ an integer or a float value."
          (delete-overlay spray--orp-overlay)
          (remove-hook 'pre-command-hook 'spray--pre-command-handler)
          (spray-stop))))
+
+(defun spray-quit ()
+  "Exit spray mode."
+  (interactive)
+  (spray-mode -1))
 
 (defun spray--pre-command-handler ()
   (unless (string-match "^spray-" (symbol-name this-command))
