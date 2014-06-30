@@ -6,6 +6,8 @@ The algorithm is inspired from [[https://github.com/Miserlou/OpenSpritz][OpenSpr
 
 ** Deficiencies in similar projects which spray.el solves:
 
+Mostly as of June 28, 2014.
+
 For all other projects:
 - It is very difficult to save your place and come back later. Emacs has lots of built in features like bookmarks or just making a note which make this easy.
 - No keybinds. This is especially useful for common, quickly used functionality like pause and back up.
