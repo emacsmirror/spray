@@ -95,3 +95,6 @@ You may customize spray by modifying following items:
 - [Face] spray-accent-face
 
 
+** Contributions are welcome!
+
+There's lots of features and enhancements to do. The algorithm has lots of room for improvement. Also, other projects may have algorithm improvements we can port over to this one.
