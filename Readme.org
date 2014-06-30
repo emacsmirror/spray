@@ -12,7 +12,7 @@ NOTE: This is a WIP project and thus APIs may change.
 
 ** Installation
 
-Put cedit.el into a "load-path"ed directory, and load it in your init
+Put spray.el into a "load-path"ed directory, and load it in your init
 file.
 
 : (require 'spray)
