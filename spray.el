@@ -71,8 +71,8 @@
                     :foreground (face-foreground 'default)
                     :slant 'normal)
 
-(make-face 'spray-orp-face)
-(set-face-attribute 'spray-orp-face nil
+(make-face 'spray-accent-face)
+(set-face-attribute 'spray-accent-face nil
                     :foreground "red"
                     :overline (face-foreground 'default)
                     :underline (face-foreground 'default)
@@ -120,7 +120,7 @@
          (overlay-put spray--base-overlay 'priority 100)
          (overlay-put spray--base-overlay 'face 'spray-base-face)
          (overlay-put spray--orp-overlay 'priority 101)
-         (overlay-put spray--orp-overlay 'face 'spray-orp-face)
+         (overlay-put spray--orp-overlay 'face 'spray-accent-face)
          (spray-start))
         (t
          (setq cursor-type spray--saved-cursor-type)

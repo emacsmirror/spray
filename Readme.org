@@ -51,6 +51,8 @@ You may customize spray by modifying following items:
 
 - [Variable] spray-wpm
 - [Variable] spray-height
+- [Variable] spray-margin-top
+- [Variable] spray-margin-left
 - [Keymap] spray-mode-map
 - [Face] spray-base-face
-- [Face] spray-orp-face
+- [Face] spray-accent-face
