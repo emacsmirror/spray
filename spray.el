@@ -1,4 +1,4 @@
-;;; cedit.el --- a speed reading mode
+;;; spray.el --- a speed reading mode
 
 ;; Copyright (C) 2014 zk_phi
 
@@ -19,7 +19,7 @@
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
 ;; Author: Ian Kelling <ian@iankelling.org>
-;; Version: 0.0.1
+;; Version: 0.0.2
 
 ;;; Commentary:
 
@@ -38,6 +38,7 @@
 ;;; Change Log:
 ;; 0.0.0 test release
 ;; 0.0.1 add spray-set-margins
+;; 0.0.2 margin options, speed control, better quit
 
 ;;; Code:
 

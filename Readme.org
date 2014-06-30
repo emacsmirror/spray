@@ -2,9 +2,44 @@
 
 A speed reading mode for Emacs.
 
-The algorithm is taken from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]] (with a few modifications).
+The algorithm is inspired from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]].
 
-NOTE: This is a WIP project and thus APIs may change.
+** Deficiencies in similar projects which spray.el solves:
+
+For all other projects, it is very difficult to save your place and come back later. Emacs has lots of built in features
+like bookmarks which make this easy.
+
+- https://github.com/jbmartinez/speed-readerff firefox extension.
+- https://github.com/cameron/squirt javascript bookmarklet.
+- https://github.com/Miserlou/OpenSpritz javascript bookmarklet.
+  - Very difficult selecting where to start / what exactly to read. 
+  - Very difficult to figure out where you are within a document. 
+
+
+- https://github.com/chaimpeck/spray website you paste text into. 
+  - Very difficult to figure out where you are within a document. 
+
+- https://github.com/xypiie/spread0r Perl program.  
+  - No apparent way to resize text.
+  - Very difficult to figure out where you are within a document. 
+
+
+- https://github.com/the-happy-hippo/sprits-it website or bookmarklet. Looks most promising of the web based projects.
+  - Very difficult selecting where to start / what exactly to read. 
+  - Somewhat difficult to figure out where you are in a document.
+
+
+Programs that I, Ian Kelling, didn't try, and why. They also probably have a lot of the problems listed above.
+- https://github.com/pasky/speedread No simple way to resize text from default of too small.
+- https://github.com/ds300/jetzt Chrome plugin: Chrome is proprietary, and its open source version is unfriendly to linux distros so they don't package it, and it's readme does not list any benefit to this program over others.
+- https://github.com/Fr4ncis/openspritz-ios ios program. I don't have an ios device, and this does not appear to have any compelling features.
+- https://github.com/OnlyInAmerica/OpenSpritz-Android android program. If I knew how to quickly move reading material to my phone, I would try this out. But, it's readme shows that the program is pretty sparse and would have some of the same problems as listed above, so not worth it.
+
+
+Downsides compared to similar projects:
+- The emacs learning curve.
+- Would be hard to get running on a phone.
+
 
 ** Screencast
 
@@ -12,7 +47,7 @@ NOTE: This is a WIP project and thus APIs may change.
 
 ** Installation
 
-Put cedit.el into a "load-path"ed directory, and load it in your init
+Put spray.el into a "load-path"ed directory, and load it in your init
 file.
 
 : (require 'spray)
@@ -56,3 +91,5 @@ You may customize spray by modifying following items:
 - [Keymap] spray-mode-map
 - [Face] spray-base-face
 - [Face] spray-accent-face
+
+
