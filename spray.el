@@ -47,6 +47,8 @@
 
 (defvar spray-wpm 400 "words/min")
 (defvar spray-height 400 "height of characters")
+(defvar spray-margin-top 1 "character margin at top of buffer. Characters are as big as spray text characters.")
+(defvar spray-margin-left 0 "character margin at left of buffer. Characters are as big as spray text characters.")
 
 (defvar spray-mode-map
   (let ((km (make-sparse-keymap)))
@@ -90,12 +92,11 @@
 
 ;; * utility functions
 
-(defun spray-set-margins (left above)
-  "Currently broken & not used:
-add margins before/above the spray text. each arguments can be
-an integer or a float value."
+(defun spray-set-margins ()
+  "Setup spray--margin-string"
   (setq spray--margin-string
-        (propertize " " 'display `((space-width ,left) (height ,(+ 1 above))))))
+        (concat (make-string spray-margin-top 10) ;; 10 = ascii newline
+                (make-string spray-margin-left 32)))) ;; 32 = ascii space
 
 ;; * the mode
 
@@ -165,6 +166,7 @@ an integer or a float value."
                             (t 0))))
     (move-overlay spray--orp-overlay (1- orp) orp)
     (move-overlay spray--base-overlay beg end)
+    (spray-set-margins)
     (overlay-put spray--base-overlay 'before-string
                  (concat spray--margin-string
                          (make-string (- 5 (- orp beg)) ?\s)))
