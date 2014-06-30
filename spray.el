@@ -121,7 +121,6 @@
          (overlay-put spray--base-overlay 'face 'spray-base-face)
          (overlay-put spray--orp-overlay 'priority 101)
          (overlay-put spray--orp-overlay 'face 'spray-orp-face)
-         (add-hook 'pre-command-hook 'spray--pre-command-handler)
          (spray-start))
         (t
          (setq cursor-type spray--saved-cursor-type)
@@ -135,17 +134,12 @@
                (buffer-face-mode 1)))
          (delete-overlay spray--base-overlay)
          (delete-overlay spray--orp-overlay)
-         (remove-hook 'pre-command-hook 'spray--pre-command-handler)
          (spray-stop))))
 
 (defun spray-quit ()
   "Exit spray mode."
   (interactive)
   (spray-mode -1))
-
-(defun spray--pre-command-handler ()
-  (unless (string-match "^spray-" (symbol-name this-command))
-    (spray-mode -1)))
 
 (defun spray--word-at-point ()
   (skip-chars-backward "^\s\t\n")

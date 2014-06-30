@@ -41,7 +41,9 @@ In spray-mode buffers, following commands are available.
 - =spray-slower= (s) ::
      decreases speed
 
-Press any key else to quit =spray-mode=.
+- =spray-quit= (q, <return>) ::
+     quit =spray-mode=
+
 
 ** Customization
 
