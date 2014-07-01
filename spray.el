@@ -59,6 +59,7 @@
     (define-key km (kbd "<left>") 'spray-backward-word)
     (define-key km (kbd "<right>") 'spray-forward-word)
     (define-key km (kbd "f") 'spray-faster)
+    (define-key km (kbd "s") 'spray-slower)
     (define-key km (kbd "q") 'spray-quit)
     (define-key km (kbd "<return>") 'spray-quit)
     km)
@@ -84,7 +85,7 @@
 (defvar spray--margin-string ""
   "Currently not used.")
 (defvar spray--base-overlay nil)
-(defvar spray--orp-overlay nil)
+(defvar spray--accent-overlay nil)
 (defvar spray--running nil)
 (defvar spray--delay 0)
 (defvar spray--saved-cursor-type nil)
@@ -108,7 +109,7 @@
   :keymap spray-mode-map
   (cond (spray-mode
          (setq spray--base-overlay (make-overlay (point-min) (point-max))
-               spray--orp-overlay (make-overlay 0 0)
+               spray--accent-overlay (make-overlay 0 0)
                spray--saved-cursor-type cursor-type
                spray--saved-restriction (and (buffer-narrowed-p)
                                              (cons (point-min) (point-max)))
@@ -120,8 +121,8 @@
            (buffer-face-mode 1))
          (overlay-put spray--base-overlay 'priority 100)
          (overlay-put spray--base-overlay 'face 'spray-base-face)
-         (overlay-put spray--orp-overlay 'priority 101)
-         (overlay-put spray--orp-overlay 'face 'spray-accent-face)
+         (overlay-put spray--accent-overlay 'priority 101)
+         (overlay-put spray--accent-overlay 'face 'spray-accent-face)
          (spray-start))
         (t
          (setq cursor-type spray--saved-cursor-type)
@@ -134,7 +135,7 @@
              (let ((buffer-face-mode-face spray--saved-buffer-face))
                (buffer-face-mode 1)))
          (delete-overlay spray--base-overlay)
-         (delete-overlay spray--orp-overlay)
+         (delete-overlay spray--accent-overlay)
          (spray-stop))))
 
 (defun spray-quit ()
@@ -147,7 +148,7 @@
   (let* ((beg (point))
          (len (skip-chars-forward "^\s\t\n"))
          (end (point))
-         (orp (+ beg (cl-case len
+         (accent (+ beg (cl-case len
                        ((1) 1)
                        ((2 3 4 5) 2)
                        ((6 7 8 9) 3)
@@ -159,12 +160,12 @@
                             ((?. ?! ?\? ?\;) 3)
                             ((?, ?:) 1)
                             (t 0))))
-    (move-overlay spray--orp-overlay (1- orp) orp)
+    (move-overlay spray--accent-overlay (1- accent) accent)
     (move-overlay spray--base-overlay beg end)
     (spray-set-margins)
     (overlay-put spray--base-overlay 'before-string
                  (concat spray--margin-string
-                         (make-string (- 5 (- orp beg)) ?\s)))
+                         (make-string (- 5 (- accent beg)) ?\s)))
     (narrow-to-region beg end)))
 
 (defun spray--update ()
