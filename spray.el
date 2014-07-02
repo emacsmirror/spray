@@ -91,6 +91,7 @@
 (defvar spray--saved-cursor-type nil)
 (defvar spray--saved-buffer-face nil)
 (defvar spray--saved-restriction nil)
+(defvar spray--saved-smartparens-enabled nil)
 
 ;; * utility functions
 
@@ -115,7 +116,12 @@
                                              (cons (point-min) (point-max)))
                spray--saved-buffer-face (and (boundp 'buffer-face-mode)
                                              buffer-face-mode
-                                             buffer-face-mode-face))
+                                             buffer-face-mode-face)
+               spray--saved-smartparens-enabled (and (boundp 'smartparens-mode)
+                                                     smartparens-mode))
+         ;; smartparens wrapping of all letter binds can cause problems.
+         ;; for example, it can cause auto-complete to activate
+         (and spray--saved-smartparens-enabled (smartparens-mode -1))
          (setq cursor-type nil)
          (let ((buffer-face-mode-face `(:height ,spray-height)))
            (buffer-face-mode 1))
@@ -125,6 +131,7 @@
          (overlay-put spray--accent-overlay 'face 'spray-accent-face)
          (spray-start))
         (t
+         (and spray--saved-smartparens-enabled (smartparens-mode 1))
          (setq cursor-type spray--saved-cursor-type)
          (if spray--saved-restriction
              (narrow-to-region (car spray--saved-restriction)
