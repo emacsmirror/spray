@@ -118,7 +118,7 @@ The accent location is chosen as the nth character in a word, depending on its l
 *** Why?
 Based on a quick count, similar programs are implemented in 6 languages, 9 platforms and 11+ projects. Every one has a similar algorithm to choose a word, an accent character and an interval to display it. How to do that best is quite important. However, how each project does it is generally buried in unrelated code, and mostly undocumented. It is prohibitively time consuming to figure out the algorithm and differences between them for each project. This sucks. Users would like to know so they can pick one. Developers would like to know so they can get ideas and spread improvements among different projects.
 
-So, I am opening a bug on every project I find, asking them to document what file and function(s) their algorithm is implemented in, and preferably to document it in english as well. The following is an example.
+So, I am opening a bug on every project I find, asking them to document what file and function(s) their algorithm is implemented in, and preferably to document it in english as well. This section is an example.
 
 
 ** Contributions are welcome!
