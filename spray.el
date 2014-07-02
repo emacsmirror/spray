@@ -118,10 +118,13 @@
                                              buffer-face-mode
                                              buffer-face-mode-face)
                spray--saved-smartparens-enabled (and (boundp 'smartparens-mode)
-                                                     smartparens-mode))
+                                                     smartparens-mode)
+               spray--saved-highlight-symbol-enabled (and (boundp 'highlight-symbol-mode)
+                                                     highlight-symbol-mode))
          ;; smartparens wrapping of all letter binds can cause problems.
          ;; for example, it can cause auto-complete to activate
          (and spray--saved-smartparens-enabled (smartparens-mode -1))
+         (and spray--saved-highlight-symbol-enabled (highlight-symbol-mode -1))
          (setq cursor-type nil)
          (let ((buffer-face-mode-face `(:height ,spray-height)))
            (buffer-face-mode 1))
@@ -132,6 +135,7 @@
          (spray-start))
         (t
          (and spray--saved-smartparens-enabled (smartparens-mode 1))
+         (and spray--saved-highlight-symbol-enabled (highlight-symbol-mode 1))
          (setq cursor-type spray--saved-cursor-type)
          (if spray--saved-restriction
              (narrow-to-region (car spray--saved-restriction)
