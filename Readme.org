@@ -98,9 +98,8 @@ You may customize spray by modifying following items:
 
 ** Algorithm details
 
-*** Algorithm code location
-This project's implementation is located in ./spray.el
-The functions =spray--word-at-point=, =spray--update= and =spray-start= contain the main of the algorithm. Word splitting is also duplicated the same way as in those functions throughout ./spray.el.
+*** Main algorithm code location
+The functions =spray--word-at-point=, =spray--update= and =spray-start= contain the main algorithm of choosing a word, an accent character and an interval to display it. Word splitting is also duplicated the same way as in those functions throughout ./spray.el.
 
 *** Algorithm translated from code to english
 
