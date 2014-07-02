@@ -53,7 +53,7 @@
 (defvar spray-wpm 400 "words/min")
 (defvar spray-height 400 "height of characters")
 (defvar spray-margin-top 1 "character margin at top of buffer. Characters are as big as spray text characters.")
-(defvar spray-margin-left 0 "character margin at left of buffer. Characters are as big as spray text characters.")
+(defvar spray-margin-left 1 "character margin at left of buffer. Characters are as big as spray text characters.")
 
 (defvar spray-mode-map
   (let ((km (make-sparse-keymap)))
