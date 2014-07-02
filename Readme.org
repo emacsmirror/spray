@@ -99,7 +99,7 @@ You may customize spray by modifying following items:
 ** Algorithm details
 
 *** Main algorithm code location
-The functions =spray--word-at-point=, =spray--update= and =spray-start= contain the main algorithm of choosing a word, an accent character and an interval to display it. Word splitting is also duplicated the same way as in those functions throughout ./spray.el.
+In =./spray.el=, the functions =spray--word-at-point=, =spray--update= and =spray-start= contain the main algorithm of choosing a word, an accent character and an interval to display it. Word splitting is also duplicated the same way as in those functions throughout ./spray.el.
 
 *** Algorithm translated from code to english
 
