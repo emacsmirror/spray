@@ -35,6 +35,10 @@
 ;;
 ;; For more informations, see Readme.org.
 
+;; Known bugs.
+;; repeated words are indistinguishable, for example
+;; "going, going, gone" reads like going, gone, with a slight delay.
+
 ;;; Change Log:
 ;; 0.0.0 test release
 ;; 0.0.1 add spray-set-margins
@@ -165,6 +169,10 @@
                        ((6 7 8 9) 3)
                        ((10 11 12 13) 4)
                        (t 5)))))
+    ;; this fairly obfuscated, using magic numbers to store state
+    ;; it would be nice to sometime patch this so it is more readable.
+    ;; for greater than 9 length, we display for twice as long
+    ;; for some punctuation, we display a blank
     (setq spray--delay (+ (if (> len 9) 1 0)
                           (if (looking-at "\n[\s\t\n]") 3 0)
                           (cl-case (char-before)
