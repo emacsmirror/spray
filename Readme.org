@@ -99,7 +99,7 @@ You may customize spray by modifying following items:
 ** Algorithm details
 
 *** Why?
-Based on a quick count, similar programs are implemented in 6 languages, 9 platforms and 15+ projects. The core algorithm is choosing a word, an accent character and an interval to display it, and how to do that best is quite important. However, how exactly each project implements that algorithm is generally buried in unrelated code, and mostly undocumented.  It is extremely difficult and time consuming to figure out the exact algorithm and differences between them for each project, and I don't think it's hardly ever been done. This sucks. Users would like to know so they can pick one. Developers would like to know so that they can improve their implementation of the algorithm.
+Based on a quick count, similar programs are implemented in 6 languages, 9 platforms and 11+ projects. The core algorithm is choosing a word, an accent character and an interval to display it, and how to do that best is quite important. However, how exactly each project implements that algorithm is generally buried in unrelated code, and mostly undocumented.  It is extremely difficult and time consuming to figure out the exact algorithm and differences between them for each project, and I don't think it's hardly ever been done. This sucks. Users would like to know so they can pick one. Developers would like to know so that they can improve their implementation of the algorithm.
 
 So, I am opening a bug on every project I find, asking them to document what file and function(s) their algorithm is implemented in, and preferably to document it in english as well. The following is an example.
 
