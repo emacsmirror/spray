@@ -92,6 +92,7 @@ You may customize spray by modifying following items:
 - [Variable] spray-height
 - [Variable] spray-margin-top
 - [Variable] spray-margin-left
+- [Variable] spray-ramp
 - [Keymap] spray-mode-map
 - [Face] spray-base-face
 - [Face] spray-accent-face
@@ -106,6 +107,8 @@ In =./spray.el=, the functions =spray--word-at-point=, =spray--update= and =spra
 Words are split at space, tab, newline, and emdash characters. If any of the characters =.!?;= appear at the end of the word, a blank word is appended to the current word. 
 
 Each word is displayed for (60 / the choosen wpm) seconds, except if the word ends with ,:— or is greater than 9 characters long, in which case it is displayed for twice as long.
+
+When started, an added delay is optionally added, based on the spray-ramp variable. See it's documentation for details.
 
 The accent location is chosen as the nth character in a word, depending on its length, based on the following table
 | length | accent position |

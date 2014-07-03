@@ -38,6 +38,8 @@
 ;; Known bugs.
 ;; repeated words are indistinguishable, for example
 ;; "going, going, gone" reads like going, gone, with a slight delay.
+;;
+;; sentences (like this) should trigger a pause for ( and )
 
 ;;; Change Log:
 ;; 0.0.0 test release
@@ -54,6 +56,9 @@
 (defvar spray-height 400 "height of characters")
 (defvar spray-margin-top 1 "character margin at top of buffer. Characters are as big as spray text characters.")
 (defvar spray-margin-left 1 "character margin at left of buffer. Characters are as big as spray text characters.")
+(defvar spray-ramp 2
+  "Ramp up to full speed. Pause for this multiple of wpm on the first word,
+decreasing by one for each subsequent word.")
 
 (defvar spray-mode-map
   (let ((km (make-sparse-keymap)))
@@ -91,6 +96,8 @@
 (defvar spray--base-overlay nil)
 (defvar spray--accent-overlay nil)
 (defvar spray--running nil)
+(defvar spray--first-words 0)
+(defvar spray--initial-delay 0)
 (defvar spray--delay 0)
 (defvar spray--saved-cursor-type nil)
 (defvar spray--saved-buffer-face nil)
@@ -187,8 +194,11 @@
                          (make-string (- 5 (- accent beg)) ?\s)))
     (narrow-to-region beg end)))
 
+
 (defun spray--update ()
-  (cond ((not (zerop spray--delay))
+  (cond ((not (zerop spray--initial-delay))
+         (setq spray--initial-delay (1- spray--initial-delay)))
+        ((not (zerop spray--delay))
          (setq spray--delay (1- spray--delay))
          (when (= spray--delay 2)
            (narrow-to-region (point) (point))))
@@ -196,6 +206,9 @@
          (widen)
          (if (eobp)
              (spray-mode -1)
+           (when (not (zerop spray--first-words))
+             (setq spray--initial-delay spray--first-words)
+             (setq spray--first-words (1- spray--first-words)))
            (skip-chars-forward "\s\t\n—")
            (spray--word-at-point)))))
 
@@ -218,6 +231,7 @@ Returns t if spray was unpaused."
 (defun spray-start ()
   "Start / resume spray."
   (interactive)
+  (setq spray--first-words spray-ramp)
   (setq spray--running
         (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
 
