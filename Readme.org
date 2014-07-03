@@ -103,9 +103,9 @@ In =./spray.el=, the functions =spray--word-at-point=, =spray--update= and =spra
 
 *** Algorithm translated from code to english
 
-Words are split at space, tab and newline characters, and if any of the characters =.!?;= appear in a word, a blank word is appended to the current word.
+Words are split at space, tab, newline, and emdash characters. If any of the characters =.!?;= appear at the end of the word, a blank word is appended to the current word. 
 
-Each word is displayed for (60 / the choosen wpm) seconds, except if the word contains : or , or is greater than 9 characters long, in which case it is displayed for twice as long.
+Each word is displayed for (60 / the choosen wpm) seconds, except if the word ends with ,:— or is greater than 9 characters long, in which case it is displayed for twice as long.
 
 The accent location is chosen as the nth character in a word, depending on its length, based on the following table
 | length | accent position |

@@ -159,9 +159,9 @@
   (spray-mode -1))
 
 (defun spray--word-at-point ()
-  (skip-chars-backward "^\s\t\n")
+  (skip-chars-backward "^\s\t\n—")
   (let* ((beg (point))
-         (len (skip-chars-forward "^\s\t\n"))
+         (len (+ (skip-chars-forward "^\s\t\n—") (skip-chars-forward "—")))
          (end (point))
          (accent (+ beg (cl-case len
                        ((1) 1)
@@ -177,7 +177,7 @@
                           (if (looking-at "\n[\s\t\n]") 3 0)
                           (cl-case (char-before)
                             ((?. ?! ?\? ?\;) 3)
-                            ((?, ?:) 1)
+                            ((?, ?: ?—) 1)
                             (t 0))))
     (move-overlay spray--accent-overlay (1- accent) accent)
     (move-overlay spray--base-overlay beg end)
@@ -196,7 +196,7 @@
          (widen)
          (if (eobp)
              (spray-mode -1)
-           (skip-chars-forward "\s\t\n")
+           (skip-chars-forward "\s\t\n—")
            (spray--word-at-point)))))
 
 ;; * interactive commands
@@ -226,15 +226,15 @@ Returns t if spray was unpaused."
   (interactive)
   (spray-stop)
   (widen)
-  (skip-chars-forward "\s\t\n")
+  (skip-chars-forward "\s\t\n—")
   (spray--word-at-point))
 
 (defun spray-backward-word ()
   (interactive)
   (spray-stop)
   (widen)
-  (skip-chars-backward "^\s\t\n")
-  (skip-chars-backward "\s\t\n")
+  (skip-chars-backward "^\s\t\n—")
+  (skip-chars-backward "\s\t\n—")
   (spray--word-at-point))
 
 (defun spray-faster ()
