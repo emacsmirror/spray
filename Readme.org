@@ -4,6 +4,14 @@ A speed reading mode for Emacs.
 
 The algorithm is inspired from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]].
 
+
+** Screencast
+
+[[screencast.gif]]
+
+The story continues at [[https://www.gnu.org/philosophy/right-to-read.html][gnu.org]]
+
+
 ** Deficiencies in similar projects which spray.el solves:
 
 Mostly as of June 28, 2014.
@@ -43,11 +51,6 @@ Programs that I, Ian Kelling, didn't try, and why. They also probably have a lot
 Downsides compared to similar projects:
 - The emacs learning curve.
 - Would be hard to get running on a phone.
-
-
-** Screencast
-
-[[screencast.gif]]
 
 ** Installation
 
