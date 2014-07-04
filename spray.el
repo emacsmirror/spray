@@ -1,4 +1,4 @@
-;;; cedit.el --- a speed reading mode
+;;; spray.el --- a speed reading mode
 
 ;; Copyright (C) 2014 zk_phi
 
@@ -18,7 +18,8 @@
 
 ;; Author: zk_phi
 ;; URL: http://hins11.yu-yake.com/
-;; Version: 0.0.1
+;; Author: Ian Kelling <ian@iankelling.org>
+;; Version: 0.0.2
 
 ;;; Commentary:
 
@@ -34,9 +35,16 @@
 ;;
 ;; For more informations, see Readme.org.
 
+;; Known bugs.
+;; repeated words are indistinguishable, for example
+;; "going, going, gone" reads like going, gone, with a slight delay.
+;;
+;; sentences (like this) should trigger a pause for ( and )
+
 ;;; Change Log:
 ;; 0.0.0 test release
 ;; 0.0.1 add spray-set-margins
+;; 0.0.2 margin options, speed control, better quit
 
 ;;; Code:
 
@@ -46,6 +54,11 @@
 
 (defvar spray-wpm 400 "words/min")
 (defvar spray-height 400 "height of characters")
+(defvar spray-margin-top 1 "character margin at top of buffer. Characters are as big as spray text characters.")
+(defvar spray-margin-left 1 "character margin at left of buffer. Characters are as big as spray text characters.")
+(defvar spray-ramp 2
+  "Ramp up to full speed. Pause for this multiple of wpm on the first word,
+decreasing by one for each subsequent word.")
 
 (defvar spray-mode-map
   (let ((km (make-sparse-keymap)))
@@ -54,6 +67,10 @@
     (define-key km (kbd "l") 'spray-forward-word)
     (define-key km (kbd "<left>") 'spray-backward-word)
     (define-key km (kbd "<right>") 'spray-forward-word)
+    (define-key km (kbd "f") 'spray-faster)
+    (define-key km (kbd "s") 'spray-slower)
+    (define-key km (kbd "q") 'spray-quit)
+    (define-key km (kbd "<return>") 'spray-quit)
     km)
   "keymap for spray-mode buffers")
 
@@ -62,32 +79,38 @@
 (make-face 'spray-base-face)
 (set-face-attribute 'spray-base-face nil
                     :background (face-background 'default)
-                    :foreground (face-foreground 'default))
+                    :foreground (face-foreground 'default)
+                    :slant 'normal)
 
-(make-face 'spray-orp-face)
-(set-face-attribute 'spray-orp-face nil
+(make-face 'spray-accent-face)
+(set-face-attribute 'spray-accent-face nil
                     :foreground "red"
                     :overline (face-foreground 'default)
-                    :underline (face-foreground 'default))
+                    :underline (face-foreground 'default)
+                    :slant 'normal)
 
 ;; * internal vars
 
-(defvar spray--margin-string "")
+(defvar spray--margin-string ""
+  "Currently not used.")
 (defvar spray--base-overlay nil)
-(defvar spray--orp-overlay nil)
+(defvar spray--accent-overlay nil)
 (defvar spray--running nil)
+(defvar spray--first-words 0)
+(defvar spray--initial-delay 0)
 (defvar spray--delay 0)
 (defvar spray--saved-cursor-type nil)
 (defvar spray--saved-buffer-face nil)
 (defvar spray--saved-restriction nil)
+(defvar spray--saved-smartparens-enabled nil)
 
 ;; * utility functions
 
-(defun spray-set-margins (left above)
-  "add margins before/above the spray text. each arguments can be
-an integer or a float value."
+(defun spray-set-margins ()
+  "Setup spray--margin-string"
   (setq spray--margin-string
-        (propertize " " 'display `((space-width ,left) (height ,(1+ above))))))
+        (concat (make-string spray-margin-top 10) ;; 10 = ascii newline
+                (make-string spray-margin-left 32)))) ;; 32 = ascii space
 
 ;; * the mode
 
@@ -98,23 +121,32 @@ an integer or a float value."
   :keymap spray-mode-map
   (cond (spray-mode
          (setq spray--base-overlay (make-overlay (point-min) (point-max))
-               spray--orp-overlay (make-overlay 0 0)
+               spray--accent-overlay (make-overlay 0 0)
                spray--saved-cursor-type cursor-type
                spray--saved-restriction (and (buffer-narrowed-p)
                                              (cons (point-min) (point-max)))
                spray--saved-buffer-face (and (boundp 'buffer-face-mode)
                                              buffer-face-mode
-                                             buffer-face-mode-face))
+                                             buffer-face-mode-face)
+               spray--saved-smartparens-enabled (and (boundp 'smartparens-mode)
+                                                     smartparens-mode)
+               spray--saved-highlight-symbol-enabled (and (boundp 'highlight-symbol-mode)
+                                                     highlight-symbol-mode))
+         ;; smartparens wrapping of all letter binds can cause problems.
+         ;; for example, it can cause auto-complete to activate
+         (and spray--saved-smartparens-enabled (smartparens-mode -1))
+         (and spray--saved-highlight-symbol-enabled (highlight-symbol-mode -1))
          (setq cursor-type nil)
          (let ((buffer-face-mode-face `(:height ,spray-height)))
            (buffer-face-mode 1))
          (overlay-put spray--base-overlay 'priority 100)
          (overlay-put spray--base-overlay 'face 'spray-base-face)
-         (overlay-put spray--orp-overlay 'priority 101)
-         (overlay-put spray--orp-overlay 'face 'spray-orp-face)
-         (add-hook 'pre-command-hook 'spray--pre-command-handler)
-         (spray-start/stop 1))
+         (overlay-put spray--accent-overlay 'priority 101)
+         (overlay-put spray--accent-overlay 'face 'spray-accent-face)
+         (spray-start))
         (t
+         (and spray--saved-smartparens-enabled (smartparens-mode 1))
+         (and spray--saved-highlight-symbol-enabled (highlight-symbol-mode 1))
          (setq cursor-type spray--saved-cursor-type)
          (if spray--saved-restriction
              (narrow-to-region (car spray--saved-restriction)
@@ -125,40 +157,48 @@ an integer or a float value."
              (let ((buffer-face-mode-face spray--saved-buffer-face))
                (buffer-face-mode 1)))
          (delete-overlay spray--base-overlay)
-         (delete-overlay spray--orp-overlay)
-         (remove-hook 'pre-command-hook 'spray--pre-command-handler)
-         (spray-start/stop -1))))
+         (delete-overlay spray--accent-overlay)
+         (spray-stop))))
 
-(defun spray--pre-command-handler ()
-  (unless (string-match "^spray-" (symbol-name this-command))
-    (spray-mode -1)))
+(defun spray-quit ()
+  "Exit spray mode."
+  (interactive)
+  (spray-mode -1))
 
 (defun spray--word-at-point ()
-  (skip-chars-backward "^\s\t\n")
+  (skip-chars-backward "^\s\t\n—")
   (let* ((beg (point))
-         (len (skip-chars-forward "^\s\t\n"))
+         (len (+ (skip-chars-forward "^\s\t\n—") (skip-chars-forward "—")))
          (end (point))
-         (orp (+ beg (cl-case len
+         (accent (+ beg (cl-case len
                        ((1) 1)
                        ((2 3 4 5) 2)
                        ((6 7 8 9) 3)
                        ((10 11 12 13) 4)
                        (t 5)))))
+    ;; this fairly obfuscated, using magic numbers to store state
+    ;; it would be nice to sometime patch this so it is more readable.
+    ;; for greater than 9 length, we display for twice as long
+    ;; for some punctuation, we display a blank
     (setq spray--delay (+ (if (> len 9) 1 0)
                           (if (looking-at "\n[\s\t\n]") 3 0)
                           (cl-case (char-before)
                             ((?. ?! ?\? ?\;) 3)
-                            ((?, ?:) 1)
+                            ((?, ?: ?—) 1)
                             (t 0))))
-    (move-overlay spray--orp-overlay (1- orp) orp)
+    (move-overlay spray--accent-overlay (1- accent) accent)
     (move-overlay spray--base-overlay beg end)
+    (spray-set-margins)
     (overlay-put spray--base-overlay 'before-string
                  (concat spray--margin-string
-                         (make-string (- 5 (- orp beg)) ?\s)))
+                         (make-string (- 5 (- accent beg)) ?\s)))
     (narrow-to-region beg end)))
 
+
 (defun spray--update ()
-  (cond ((not (zerop spray--delay))
+  (cond ((not (zerop spray--initial-delay))
+         (setq spray--initial-delay (1- spray--initial-delay)))
+        ((not (zerop spray--delay))
          (setq spray--delay (1- spray--delay))
          (when (= spray--delay 2)
            (narrow-to-region (point) (point))))
@@ -166,37 +206,76 @@ an integer or a float value."
          (widen)
          (if (eobp)
              (spray-mode -1)
-           (skip-chars-forward "\s\t\n")
+           (when (not (zerop spray--first-words))
+             (setq spray--initial-delay spray--first-words)
+             (setq spray--first-words (1- spray--first-words)))
+           (skip-chars-forward "\s\t\n—")
            (spray--word-at-point)))))
 
 ;; * interactive commands
 
-(defun spray-start/stop (&optional switch)
+(defun spray-start/stop ()
+  "Toggle pause/unpause spray."
   (interactive)
-  (cond ((and (memql switch '(nil 1))
-              (not spray--running))
-         (setq spray--running
-               (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
-        ((memql switch '(nil -1))
-         (cancel-timer spray--running)
-         (setq spray--running nil))
-        (t
-         nil)))
+  (or (spray-stop) (spray-start)))
+
+(defun spray-stop ()
+  "Pause spray.
+Returns t if spray was unpaused."
+  (interactive)
+  (prog1 spray--running
+    (when spray--running
+      (cancel-timer spray--running)
+      (setq spray--running nil))))
+
+(defun spray-start ()
+  "Start / resume spray."
+  (interactive)
+  (setq spray--first-words spray-ramp)
+  (setq spray--running
+        (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
+
 
 (defun spray-forward-word ()
   (interactive)
-  (when spray--running (spray-start/stop -1))
+  (spray-stop)
   (widen)
-  (skip-chars-forward "\s\t\n")
+  (skip-chars-forward "\s\t\n—")
   (spray--word-at-point))
 
 (defun spray-backward-word ()
   (interactive)
-  (when spray--running (spray-start/stop -1))
+  (spray-stop)
   (widen)
-  (skip-chars-backward "^\s\t\n")
-  (skip-chars-backward "\s\t\n")
+  (skip-chars-backward "^\s\t\n—")
+  (skip-chars-backward "\s\t\n—")
   (spray--word-at-point))
+
+(defun spray-faster ()
+  "Increases speed.
+
+Increases the wpm (words per minute) parameter. See the variable
+`spray-wmp'."
+  (interactive)
+  (spray-inc-wpm 20))
+
+(defun spray-slower ()
+  "Decreases speed.
+
+Decreases the wpm (words per minute) parameter. See the variable
+`spray-wmp'."
+  (interactive)
+  (spray-inc-wpm -20))
+
+(defun spray-inc-wpm (delta)
+  (let ((was-running spray--running))
+    (spray-stop)
+    (when (< 10 (+ spray-wpm delta))
+      (setq spray-wpm (+ spray-wpm delta)))
+    (and was-running (spray-backward-word))
+    (message "spray wpm: %d" spray-wpm)
+    (when was-running
+      (spray-start))))
 
 ;; * provide
 

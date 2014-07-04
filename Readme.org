@@ -2,13 +2,55 @@
 
 A speed reading mode for Emacs.
 
-The algorithm is taken from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]] (with a few modifications).
+The algorithm is inspired from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]].
 
-NOTE: This is a WIP project and thus APIs may change.
 
 ** Screencast
 
 [[screencast.gif]]
+
+The story continues at [[https://www.gnu.org/philosophy/right-to-read.html][gnu.org]]
+
+
+** Deficiencies in similar projects which spray.el solves:
+
+Mostly as of June 28, 2014.
+
+For all other projects:
+- It is very difficult to save your place and come back later. Emacs has lots of built in features like bookmarks or just making a note which make this easy.
+- No keybinds. This is especially useful for common, quickly used functionality like pause and back up.
+
+Specific projects:
+- https://github.com/jbmartinez/speed-readerff firefox extension.
+- https://github.com/cameron/squirt javascript bookmarklet.
+- https://github.com/Miserlou/OpenSpritz javascript bookmarklet.
+  - Very difficult selecting where to start / what exactly to read. 
+  - Very difficult to figure out where you are within a document. 
+
+
+- https://github.com/chaimpeck/spray website you paste text into. 
+  - Very difficult to figure out where you are within a document. 
+
+- https://github.com/xypiie/spread0r Perl program.  
+  - No apparent way to resize text.
+  - Very difficult to figure out where you are within a document. 
+
+
+- https://github.com/the-happy-hippo/sprits-it website or bookmarklet. Looks most promising of the web based projects.
+  - Very difficult selecting where to start / what exactly to read. 
+  - Somewhat difficult to figure out where you are in a document.
+
+
+Programs that I, Ian Kelling, didn't try, and why. They also probably have a lot of the problems listed above.
+- https://github.com/pasky/speedread No simple way to resize text from default of too small.
+- https://github.com/ds300/jetzt Chrome plugin: Chrome is proprietary, and its open source version is unfriendly to linux distros so they don't package it, and it's readme does not list any benefit to this program over others.
+- https://github.com/Fr4ncis/openspritz-ios ios program. I don't have an ios device, and this does not appear to have any compelling features.
+- https://github.com/OnlyInAmerica/OpenSpritz-Android android program. If I knew how to quickly move reading material to my phone, I would try this out. But, it's readme shows that the program is pretty sparse and would have some of the same problems as listed above, so not worth it.
+
+
+Downsides compared to similar projects:
+- The emacs learning curve.
+- Would be hard to get running on a phone.
 
 ** Installation
 
@@ -35,7 +77,15 @@ In spray-mode buffers, following commands are available.
 - =spray-forward-word= (l, <right>) ::
      inverse of =spray-backward-word=
 
-Press any key else to quit =spray-mode=.
+- =spray-faster= (f) ::
+     increases speed
+
+- =spray-slower= (s) ::
+     decreases speed
+
+- =spray-quit= (q, <return>) ::
+     quit =spray-mode=
+
 
 ** Customization
 
@@ -43,6 +93,40 @@ You may customize spray by modifying following items:
 
 - [Variable] spray-wpm
 - [Variable] spray-height
+- [Variable] spray-margin-top
+- [Variable] spray-margin-left
+- [Variable] spray-ramp
 - [Keymap] spray-mode-map
 - [Face] spray-base-face
-- [Face] spray-orp-face
+- [Face] spray-accent-face
+
+** Algorithm details
+
+*** Main algorithm code location
+In =./spray.el=, the functions =spray--word-at-point=, =spray--update= and =spray-start= contain the main algorithm of choosing a word, an accent character and an interval to display it. Word splitting is also duplicated the same way as in those functions throughout ./spray.el.
+
+*** Algorithm translated from code to english
+
+Words are split at space, tab, newline, and emdash characters. If any of the characters =.!?;= appear at the end of the word, a blank word is appended to the current word. 
+
+Each word is displayed for (60 / the choosen wpm) seconds, except if the word ends with ,:— or is greater than 9 characters long, in which case it is displayed for twice as long.
+
+When started, an added delay is optionally added, based on the spray-ramp variable. See it's documentation for details.
+
+The accent location is chosen as the nth character in a word, depending on its length, based on the following table
+| length | accent position |
+|      1 |               1 |
+|    2-5 |               2 |
+|    6-9 |               3 |
+|  10-13 |               4 |
+|    14+ |               5 |
+
+*** Why?
+Based on a quick count, similar programs are implemented in 6 languages, 9 platforms and 11+ projects. Every one has a similar algorithm to choose a word, an accent character and an interval to display it. How to do that best is quite important. However, how each project does it is generally buried in unrelated code, and mostly undocumented. It is prohibitively time consuming to figure out the algorithm and differences between them for each project. This sucks. Users would like to know so they can pick one. Developers would like to know so they can get ideas and spread improvements among different projects.
+
+So, I am opening a bug on every project I find, asking them to document what file and function(s) their algorithm is implemented in, and preferably to document it in english as well. This section is an example.
+
+
+** Contributions are welcome!
+
+There's lots of features and enhancements to do. The algorithm and interface could certainly be improved in various ways.
