@@ -52,10 +52,20 @@
 
 ;; * customizable vars
 
-(defvar spray-wpm 400 "words/min")
-(defvar spray-height 400 "height of characters")
-(defvar spray-margin-top 1 "character margin at top of buffer. Characters are as big as spray text characters.")
-(defvar spray-margin-left 1 "character margin at left of buffer. Characters are as big as spray text characters.")
+(defvar spray-wpm 400
+  "words/min")
+
+(defvar spray-height 400
+  "height of characters")
+
+(defvar spray-margin-top 1
+  "character margin at top of buffer. Characters are as big as
+  spray text characters.")
+
+(defvar spray-margin-left 1
+  "character margin at left of buffer. Characters are as big as
+  spray text characters.")
+
 (defvar spray-ramp 2
   "Ramp up to full speed. Pause for this multiple of wpm on the first word,
 decreasing by one for each subsequent word.")
@@ -71,28 +81,31 @@ decreasing by one for each subsequent word.")
     (define-key km (kbd "s") 'spray-slower)
     (define-key km (kbd "q") 'spray-quit)
     (define-key km (kbd "<return>") 'spray-quit)
+    (define-key km [remap forward-char] 'spray-forward-word)
+    (define-key km [remap backward-char] 'spray-backward-word)
+    (define-key km [remap forward-word] 'spray-forward-word)
+    (define-key km [remap backward-word] 'spray-backward-word)
+    (define-key km [remap keyboard-quit] 'spray-quit)
     km)
   "keymap for spray-mode buffers")
+
+(defvar spray-unsupported-minor-modes
+  '(buffer-face-mode smartparens-mode highlight-symbol-mode))
 
 ;; * faces
 
 (make-face 'spray-base-face)
 (set-face-attribute 'spray-base-face nil
-                    :background (face-background 'default)
-                    :foreground (face-foreground 'default)
-                    :slant 'normal)
+                    :inherit 'default)
 
 (make-face 'spray-accent-face)
 (set-face-attribute 'spray-accent-face nil
-                    :foreground "red"
-                    :overline (face-foreground 'default)
-                    :underline (face-foreground 'default)
-                    :slant 'normal)
+                    :inherit 'spray-base-face
+                    :foreground "red")
 
 ;; * internal vars
 
-(defvar spray--margin-string ""
-  "Currently not used.")
+(defvar spray--margin-string "")
 (defvar spray--base-overlay nil)
 (defvar spray--accent-overlay nil)
 (defvar spray--running nil)
@@ -100,9 +113,8 @@ decreasing by one for each subsequent word.")
 (defvar spray--initial-delay 0)
 (defvar spray--delay 0)
 (defvar spray--saved-cursor-type nil)
-(defvar spray--saved-buffer-face nil)
 (defvar spray--saved-restriction nil)
-(defvar spray--saved-smartparens-enabled nil)
+(defvar spray--saved-minor-modes nil)
 
 ;; * utility functions
 
@@ -124,18 +136,11 @@ decreasing by one for each subsequent word.")
                spray--accent-overlay (make-overlay 0 0)
                spray--saved-cursor-type cursor-type
                spray--saved-restriction (and (buffer-narrowed-p)
-                                             (cons (point-min) (point-max)))
-               spray--saved-buffer-face (and (boundp 'buffer-face-mode)
-                                             buffer-face-mode
-                                             buffer-face-mode-face)
-               spray--saved-smartparens-enabled (and (boundp 'smartparens-mode)
-                                                     smartparens-mode)
-               spray--saved-highlight-symbol-enabled (and (boundp 'highlight-symbol-mode)
-                                                     highlight-symbol-mode))
-         ;; smartparens wrapping of all letter binds can cause problems.
-         ;; for example, it can cause auto-complete to activate
-         (and spray--saved-smartparens-enabled (smartparens-mode -1))
-         (and spray--saved-highlight-symbol-enabled (highlight-symbol-mode -1))
+                                             (cons (point-min) (point-max))))
+         (dolist (mode spray-unsupported-minor-modes)
+           (when (and (boundp mode) (eval mode))
+             (funcall mode -1)
+             (push mode spray--saved-minor-modes)))
          (setq cursor-type nil)
          (let ((buffer-face-mode-face `(:height ,spray-height)))
            (buffer-face-mode 1))
@@ -145,20 +150,18 @@ decreasing by one for each subsequent word.")
          (overlay-put spray--accent-overlay 'face 'spray-accent-face)
          (spray-start))
         (t
-         (and spray--saved-smartparens-enabled (smartparens-mode 1))
-         (and spray--saved-highlight-symbol-enabled (highlight-symbol-mode 1))
-         (setq cursor-type spray--saved-cursor-type)
+         (spray-stop)
+         (delete-overlay spray--accent-overlay)
+         (delete-overlay spray--base-overlay)
+         (buffer-face-mode -1)
          (if spray--saved-restriction
              (narrow-to-region (car spray--saved-restriction)
                                (cdr spray--saved-restriction))
            (widen))
-         (buffer-face-mode -1)
-         (if spray--saved-buffer-face
-             (let ((buffer-face-mode-face spray--saved-buffer-face))
-               (buffer-face-mode 1)))
-         (delete-overlay spray--base-overlay)
-         (delete-overlay spray--accent-overlay)
-         (spray-stop))))
+         (setq cursor-type spray--saved-cursor-type)
+         (dolist (mode spray--saved-minor-modes)
+           (funcall mode 1))
+         (setq spray--saved-minor-modes nil))))
 
 (defun spray-quit ()
   "Exit spray mode."
@@ -193,7 +196,6 @@ decreasing by one for each subsequent word.")
                  (concat spray--margin-string
                          (make-string (- 5 (- accent beg)) ?\s)))
     (narrow-to-region beg end)))
-
 
 (defun spray--update ()
   (cond ((not (zerop spray--initial-delay))
@@ -235,7 +237,6 @@ Returns t if spray was unpaused."
   (setq spray--running
         (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
 
-
 (defun spray-forward-word ()
   (interactive)
   (spray-stop)
@@ -255,7 +256,7 @@ Returns t if spray was unpaused."
   "Increases speed.
 
 Increases the wpm (words per minute) parameter. See the variable
-`spray-wmp'."
+`spray-wpm'."
   (interactive)
   (spray-inc-wpm 20))
 
@@ -263,7 +264,7 @@ Increases the wpm (words per minute) parameter. See the variable
   "Decreases speed.
 
 Decreases the wpm (words per minute) parameter. See the variable
-`spray-wmp'."
+`spray-wpm'."
   (interactive)
   (spray-inc-wpm -20))
 
