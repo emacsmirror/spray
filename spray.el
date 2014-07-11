@@ -1,6 +1,6 @@
 ;;; spray.el --- a speed reading mode
 
-;; Copyright (C) 2014 zk_phi
+;; Copyright (C) 2014 Ian Kelling <ian@iankelling.org>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -16,32 +16,74 @@
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-;; Author: zk_phi
-;; URL: http://hins11.yu-yake.com/
+;; Maintainer: Ian Kelling <ian@iankelling.org>
 ;; Author: Ian Kelling <ian@iankelling.org>
+;; Author: zk_phi
+;; Created: 18 Jun 2014
 ;; Version: 0.0.2
+;; URL: https://github.com/ian-kelling/spray
+;; Keywords: convenience
 
 ;;; Commentary:
 
-;; Put this script into a "load-path"ed directory, and load it in your
-;; init file.
-;;
+;; For speed reading, or just more enjoyable reading. Narrows the buffer to show
+;; one word at a time. Adjust speed / pause as needed.
+;; 
+;; Download from Melpa or put this script into a "load-path"ed directory, and
+;; load it in your init file:
+
 ;;   (require 'spray)
-;;
+
 ;; Then you may run spray with "M-x spray-mode". Binding some keys may
 ;; also be useful.
-;;
-;;   (global-set-key (kbd "<f6>") 'spray-mode)
-;;
-;; For more informations, see Readme.org.
 
-;; Known bugs.
+;;   (global-set-key (kbd "<f6>") 'spray-mode)
+
+;; In spray-mode buffers, following commands are available.
+
+;; - =spray-start/stop= (SPC) ::
+;; pause or resume spraying
+
+;; - =spray-backward-word= (h, <left>) ::
+;; pause and back to the last word
+
+;; - =spray-forward-word= (l, <right>) ::
+;; inverse of =spray-backward-word=
+
+;; - =spray-faster= (f) ::
+;; increases speed
+
+;; - =spray-slower= (s) ::
+;; decreases speed
+
+;; - =spray-quit= (q, <return>) ::
+;; quit =spray-mode=
+
+;; You may customize spray by modifying following items:
+
+;; - [Variable] spray-wpm
+;; - [Variable] spray-height
+;; - [Variable] spray-margin-top
+;; - [Variable] spray-margin-left
+;; - [Variable] spray-ramp
+;; - [Keymap] spray-mode-map
+;; - [Face] spray-base-face
+;; - [Face] spray-accent-face
+
+;; Readme.org from the package repository has some additional information:
+;; A gif screencast.
+;; Algorithm specification.
+;; Comparison with similar projects.
+
+;;; Known bugs:
+
 ;; repeated words are indistinguishable, for example
 ;; "going, going, gone" reads like going, gone, with a slight delay.
 ;;
 ;; sentences (like this) should trigger a pause for ( and )
 
 ;;; Change Log:
+
 ;; 0.0.0 test release
 ;; 0.0.1 add spray-set-margins
 ;; 0.0.2 margin options, speed control, better quit
@@ -52,23 +94,56 @@
 
 ;; * customizable vars
 
-(defvar spray-wpm 400
-  "words/min")
+(defcustom spray-wpm 400
+  "Words per minute"
+  :group 'spray
+  :type 'integer)
 
-(defvar spray-height 400
-  "height of characters")
+(defcustom spray-height 400
+  "Height of characters"
+  :group 'spray
+  :type 'integer)
 
-(defvar spray-margin-top 1
-  "character margin at top of buffer. Characters are as big as
-  spray text characters.")
+(defcustom spray-margin-top 1
+  "Character margin at top of buffer. Characters are as big as
+  spray text characters."
+  :group 'spray
+  :type 'integer)
 
-(defvar spray-margin-left 1
-  "character margin at left of buffer. Characters are as big as
-  spray text characters.")
+(defcustom spray-margin-left 1
+  "Character margin at left of buffer. Characters are as big as
+  spray text characters."
+  :group 'spray
+  :type 'integer)
 
-(defvar spray-ramp 2
-  "Ramp up to full speed. Pause for this multiple of wpm on the first word,
-decreasing by one for each subsequent word.")
+(defcustom spray-ramp 2
+  "Initial words before ramping up to full speed. Pauses for
+this multiple of wpm on the first word,
+decreasing by one for each subsequent word."
+  :group 'spray
+  :type 'integer)
+
+(defcustom spray-unsupported-minor-modes
+  '(buffer-face-mode smartparens-mode highlight-symbol-mode)
+  "Minor modes to toggle off when in spray mode."
+  :group 'spray
+  :type '(list symbol))
+
+
+;; * faces
+
+(defface spray-base-face
+  '((t (:inherit default)))
+  "Face for non-accent characters."
+  :group 'spray)
+
+(defface spray-base-face
+  '((t (:foreground "red" :inherit spray-base-face)))
+  "Face for accent character."
+  :group 'spray)
+
+
+;; keymap
 
 (defvar spray-mode-map
   (let ((km (make-sparse-keymap)))
@@ -89,19 +164,6 @@ decreasing by one for each subsequent word.")
     km)
   "keymap for spray-mode buffers")
 
-(defvar spray-unsupported-minor-modes
-  '(buffer-face-mode smartparens-mode highlight-symbol-mode))
-
-;; * faces
-
-(make-face 'spray-base-face)
-(set-face-attribute 'spray-base-face nil
-                    :inherit 'default)
-
-(make-face 'spray-accent-face)
-(set-face-attribute 'spray-accent-face nil
-                    :inherit 'spray-base-face
-                    :foreground "red")
 
 ;; * internal vars
 

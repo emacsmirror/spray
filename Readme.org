@@ -130,8 +130,3 @@ So, I am opening a bug on every project I find, asking them to document what fil
 ** Contributions are welcome!
 
 There's lots of features and enhancements to do. The algorithm and interface could certainly be improved in various ways.
-
-** Freedom To Read
-
-It is important to use and develop free software for this kind or program. Proprietary software of this kind usually collects information about what you read, which often ends up being used for purposes you would rather it not: personal spying, government spying, advertising profiling, discrimination by corporations and government, and more. This kind of proprietary software can also be used as a tool for drm and censorship. You can read more comprehensively about these and other issues at places like https://www.gnu.org/philosophy/right-to-read.html, https://www.gnu.org/philosophy/the-danger-of-ebooks.html, https://www.eff.org, https://fsf.org.
-
