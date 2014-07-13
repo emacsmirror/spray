@@ -137,7 +137,7 @@ decreasing by one for each subsequent word."
   "Face for non-accent characters."
   :group 'spray)
 
-(defface spray-base-face
+(defface spray-accent-face
   '((t (:foreground "red" :inherit spray-base-face)))
   "Face for accent character."
   :group 'spray)
