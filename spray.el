@@ -123,7 +123,8 @@ decreasing by one for each subsequent word."
   :type 'integer)
 
 (defcustom spray-unsupported-minor-modes
-  '(buffer-face-mode smartparens-mode highlight-symbol-mode)
+  '(buffer-face-mode smartparens-mode highlight-symbol-mode
+		     column-number-mode)
   "Minor modes to toggle off when in spray mode."
   :group 'spray
   :type '(list symbol))
