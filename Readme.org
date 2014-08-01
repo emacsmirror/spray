@@ -59,6 +59,11 @@ You may customize spray by modifying following items:
 - [Face] spray-base-face
 - [Face] spray-accent-face
 
+** Feedback, bugs, etc.
+
+Bug tracking is on github.
+Mailing list for any feedback, questions, etc: https://lists.iankelling.org/listinfo/spray
+
 
 ** Similar emacs package: speedread
 

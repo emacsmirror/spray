@@ -21,6 +21,7 @@
 ;; Created: 18 Jun 2014
 ;; Version: 0.0.2
 ;; URL: https://github.com/ian-kelling/spray
+;; Mailing list: https://lists.iankelling.org/listinfo/spray
 ;; Keywords: convenience
 
 ;;; Commentary:
