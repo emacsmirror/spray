@@ -270,7 +270,7 @@ decreasing by one for each subsequent word."
         (t
          (widen)
          (if (eobp)
-             (spray-mode -1)
+             (spray-quit)
            (when (not (zerop spray--first-words))
              (setq spray--initial-delay spray--first-words)
              (setq spray--first-words (1- spray--first-words)))
