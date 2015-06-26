@@ -99,6 +99,12 @@
   :group 'spray
   :type 'integer)
 
+(defcustom spray-save-point nil
+  "Set to true and then exiting spray mode will restore the point"
+  :group 'spray
+  :type 'boolean)
+
+
 (defcustom spray-height 400
   "Height of characters"
   :group 'spray
@@ -178,6 +184,7 @@ decreasing by one for each subsequent word."
 (defvar spray--saved-cursor-type nil)
 (defvar spray--saved-restriction nil)
 (defvar spray--saved-minor-modes nil)
+(defvar spray--saved-point nil)
 
 ;; * utility functions
 
@@ -198,6 +205,7 @@ decreasing by one for each subsequent word."
          (setq spray--base-overlay (make-overlay (point-min) (point-max))
                spray--accent-overlay (make-overlay 0 0)
                spray--saved-cursor-type cursor-type
+               spray--saved-point (point)
                spray--saved-restriction (and (buffer-narrowed-p)
                                              (cons (point-min) (point-max))))
          (dolist (mode spray-unsupported-minor-modes)
@@ -222,6 +230,8 @@ decreasing by one for each subsequent word."
                                (cdr spray--saved-restriction))
            (widen))
          (setq cursor-type spray--saved-cursor-type)
+         (when (and spray-save-point spray--saved-point)
+           (goto-char spray--saved-point))
          (dolist (mode spray--saved-minor-modes)
            (funcall mode 1))
          (setq spray--saved-minor-modes nil))))
