@@ -247,11 +247,11 @@ decreasing by one for each subsequent word."
          (len (+ (skip-chars-forward "^\s\t\n—") (skip-chars-forward "—")))
          (end (point))
          (accent (+ beg (cl-case len
-                       ((1) 1)
-                       ((2 3 4 5) 2)
-                       ((6 7 8 9) 3)
-                       ((10 11 12 13) 4)
-                       (t 5)))))
+                          ((1) 1)
+                          ((2 3 4 5) 2)
+                          ((6 7 8 9) 3)
+                          ((10 11 12 13) 4)
+                          (t 5)))))
     ;; this fairly obfuscated, using magic numbers to store state
     ;; it would be nice to sometime patch this so it is more readable.
     ;; for greater than 9 length, we display for twice as long
