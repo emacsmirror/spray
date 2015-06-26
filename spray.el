@@ -274,9 +274,7 @@ decreasing by one for each subsequent word."
   (cond ((not (zerop spray--initial-delay))
          (setq spray--initial-delay (1- spray--initial-delay)))
         ((not (zerop spray--delay))
-         (setq spray--delay (1- spray--delay))
-         (when (= spray--delay 2)
-           (narrow-to-region (point) (point))))
+         (setq spray--delay (1- spray--delay)))
         (t
          (widen)
          (if (eobp)
