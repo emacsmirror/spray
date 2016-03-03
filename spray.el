@@ -161,6 +161,7 @@ decreasing by one for each subsequent word."
     (define-key km (kbd "<right>") 'spray-forward-word)
     (define-key km (kbd "f") 'spray-faster)
     (define-key km (kbd "s") 'spray-slower)
+    (define-key km (kbd "t") 'spray-time)
     (define-key km (kbd "q") 'spray-quit)
     (define-key km (kbd "<return>") 'spray-quit)
     (define-key km [remap forward-char] 'spray-forward-word)
@@ -348,6 +349,16 @@ Decreases the wpm (words per minute) parameter. See the variable
     (message "spray wpm: %d" spray-wpm)
     (when was-running
       (spray-start))))
+
+(defun spray-time ()
+  (interactive)
+  (widen)
+  (let ((position (progn (skip-chars-backward "^\s\t\n—") (point))))
+    (message
+     "%d per cent done; ~%d minute(s) remaining"
+     (* 100 (/ position (+ 0.0 (point-max))))
+     (fround (/ (count-words-region position (point-max)) (+ 0.0 spray-wpm)))))
+  (spray--word-at-point))
 
 ;; * provide
 
