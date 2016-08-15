@@ -86,18 +86,18 @@ Specific projects:
 - [[https://github.com/jbmartinez/speed-readerff][speed-readerff]] firefox extension.
 - [[https://github.com/cameron/squirt][squirt]] javascript bookmarklet.
 - [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]] javascript bookmarklet.
-  - Very difficult selecting where to start / what exactly to read. 
-  - Very difficult to figure out where you are within a document. 
+  - Very difficult selecting where to start / what exactly to read.
+  - Very difficult to figure out where you are within a document.
 
-- [[https://github.com/chaimpeck/spray][spray]] website you paste text into. 
-  - Very difficult to figure out where you are within a document. 
+- [[https://github.com/chaimpeck/spray][spray]] website you paste text into.
+  - Very difficult to figure out where you are within a document.
 
-- [[https://github.com/xypiie/spread0r][spread0r]] Perl program.  
+- [[https://github.com/xypiie/spread0r][spread0r]] Perl program.
   - No apparent way to resize text.
-  - Very difficult to figure out where you are within a document. 
+  - Very difficult to figure out where you are within a document.
 
 - [[https://github.com/the-happy-hippo/sprits-it][sprits-it]] website or bookmarklet. Looks most promising of the web based projects.
-  - Very difficult selecting where to start / what exactly to read. 
+  - Very difficult selecting where to start / what exactly to read.
   - Somewhat difficult to figure out where you are in a document.
 
 Programs that I, Ian Kelling, didn't try, and why. They also probably have a lot of the problems listed above.
