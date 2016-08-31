@@ -2,8 +2,6 @@
 
 A speed reading mode for Emacs.
 
-The algorithm is inspired from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]].
-
 
 ** Screencast
 
@@ -95,6 +93,8 @@ packages.
 
 ** Deficiencies in similar projects which spray.el solves:
 
+The algorithm is inspired from [[https://github.com/Miserlou/OpenSpritz][OpenSpritz]].
+
 Mostly as of June 28, 2014.
 
 For all other projects:
@@ -162,4 +162,4 @@ on its length, based on the following table
 
 ** Contributions are welcome!
 
-There's lots of features and enhancements to do. The algorithm and interface could certainly be improved in various ways.
+There's lots of features and enhancements to do. The algorithm and interface could certainly be improved in various ways. Contribute at https://gitlab.com/iankelling/spray.
