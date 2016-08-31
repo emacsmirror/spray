@@ -59,6 +59,28 @@ You may customize spray by modifying following items:
 - [Face] spray-base-face
 - [Face] spray-accent-face
 
+** If your emacs color theme does not work well with spray
+
+You could create a function to toggle the emacs theme to one that
+works with spray, and then put that in the spray mode hook. For example:
+
+#+begin_src emacs-lisp
+(defun toggle-night ()
+ (interactive)
+  (if (equal (car custom-enabled-themes) 'naquadah)
+      (override-theme 'leuven)
+  (override-theme 'naquadah)))
+(add-hook 'spray-mode-hook 'toggle-night)
+#+end_src
+
+Alternatively, one user found ways to setup a single buffer with better colors, using
+- http://www.emacswiki.org/emacs/BufferBackgroundColor
+- https://github.com/vic/color-theme-buffer-local
+
+He also found this library useful:
+https://github.com/ShingoFukuyama/ov.el
+
+
 ** Feedback, bugs, etc.
 
 Bug tracking is on github.
