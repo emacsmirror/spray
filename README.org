@@ -79,10 +79,11 @@ He also found this library useful:
 https://github.com/ShingoFukuyama/ov.el
 
 
-** Feedback, bugs, etc.
+** Feedback, bugs, contributions, all welcome
 
-Bug tracking is on github.
-Mailing list for any feedback, questions, etc: https://lists.iankelling.org/listinfo/spray
+All on: https://gitlab.com/iankelling/spray
+
+There's lots of features and enhancements to do. The algorithm and interface could certainly be improved in various ways.
 
 
 ** Similar emacs package: speedread
@@ -158,8 +159,3 @@ on its length, based on the following table
 |    6-9 |               3 |
 |  10-13 |               4 |
 |    14+ |               5 |
-
-
-** Contributions are welcome!
-
-There's lots of features and enhancements to do. The algorithm and interface could certainly be improved in various ways. Contribute at https://gitlab.com/iankelling/spray.
