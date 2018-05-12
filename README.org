@@ -1,6 +1,6 @@
 * spray.el
 
-A speed reading mode for Emacs.
+A speed reading mode for Emacs
 
 
 ** Screencast
