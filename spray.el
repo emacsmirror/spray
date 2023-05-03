@@ -276,6 +276,8 @@ decreasing by one for each subsequent word."
          (setq spray--initial-delay (1- spray--initial-delay)))
         ((not (zerop spray--delay))
          (setq spray--delay (1- spray--delay)))
+        ((string-match "timer-list-mode" (symbol-name major-mode))
+         nil)
         (t
          (widen)
          (if (eobp)
