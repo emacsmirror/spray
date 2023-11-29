@@ -276,8 +276,8 @@ decreasing by one for each subsequent word."
          (setq spray--initial-delay (1- spray--initial-delay)))
         ((not (zerop spray--delay))
          (setq spray--delay (1- spray--delay)))
-        ((string-match "timer-list-mode" (symbol-name major-mode))
-         nil)
+        ((not (eq (current-buffer) spray--initial-buffer))
+         (spray-quit))
         (t
          (widen)
          (if (eobp)
@@ -308,6 +308,7 @@ Returns t if spray was unpaused."
   "Start / resume spray."
   (interactive)
   (setq spray--first-words spray-ramp)
+  (setq spray--initial-buffer (current-buffer))
   (setq spray--running
         (run-with-timer 0 (/ 60.0 spray-wpm) 'spray--update)))
 
